@@ -1,0 +1,433 @@
+---
+title: "Jailene's Final Project Part 1"
+author: "Jailene Gonzalez"
+date: "2022-12-06"
+output: html_document
+---
+# R Reference Guide {.tabset .tabset-pills}
+
+## Loading Data and Packages 
+
+### Loading Packages
+
+There are two ways to load packages in R/RStudio: 
+
+* The function `library()` allows you to load the R packages that you want to analyze using R/RStudio. It also prints out an error message if it cannot find the package you are trying to load during the time you are running this function's line of code. 
+
+* The function `require()` is another alternative way to load the R packages that you want to analyze using R/RStudio. Unlike the `library()` function, the `require()` function returns a logical value when a package is found (e.g. TRUE) and when it is not found (e.g. FALSE). It also prints out a warning when it cannot find the package you're loading.
+
+Here, I will show how you how to use these functions by loading the `here` and `palmerpenguins` packages.
+
+```{r, message = FALSE}
+# Loading here package
+library(here)
+require(here)
+
+# Loading palmerpenguins package
+library(palmerpenguins)
+require(palmerpenguins)
+```
+
+### Loading Data
+
+In terms of loading your data, there are two functions that you can use together in base R to read and load your data: 
+
+* The function `here()` helps R navigate to the location that the file you are trying to use is at. 
+
+* The function `read.csv()` aids R in reading and transcribing the .csv file located in your Rproject folder into a `data.frame`.
+
+Here's an example using the `here()` and `read.csv()` functions to create a `data.frame` called `ginkgo` using a .csv file that contains some data collected from Ginkgo trees at UMass Amherst in 2022:
+
+```{r}
+# Creating `ginkgo` data.frame using here() and read.csv()
+ginkgo <- read.csv(here("./docs/ginkgo_data_2022.csv"))
+```
+
+
+## Data structures
+
+### Using `c()`:
+
+The function `c()` combines or concatenates its arguments into a vector (a 1-dimensional data structure consisting of 1 or more elements).
+
+All of the elements must be of the same type.
+I can’t combine character and numeric types in the same call to `c()`
+
+Here’s two examples using numeric and character data types:
+```{r}
+## Create a vector of numbers:
+num_vec  = c(1, 4, 8, 9, 13)
+
+## Create a vector of characters:
+char_vec = c("a", "fish", "data is cool")
+```
+
+I can show the contents of a vector by typing the name of the vector, or using the `print()` function.
+
+```{r}
+## Typing the name of the vector into the console prints the contents
+num_vec
+```
+
+```{r}
+## The print() function accomplishes the same task:
+print(char_vec)
+```
+
+### Using `length()`
+
+The function `length()` is commonly used on vectors, factors, and other R objects in order to get or set its length.
+
+This function can be used in two ways:
+
+* `length(x)` - This line of code should get the length of your R object. The `x` here is the R object I want to find the length of.
+
+```{r}
+# Creating an R object called 'x' with 5 numbers. 
+x = c(4,5,6,7,8)
+
+# Using length() to get the length of my R object 'x'.
+length(x)
+```
+
+* `length(x) <- value` - This line of code should set a new length to your R object. The `value` you input should be a non-negative integer or double.
+
+```{r}
+# Using 'length(x) <- value' and setting 'x' length from 5 to 3. 
+length(x) <- 3
+
+# Calling 'x' to see the length I set by adding '<- 3' after length(x).
+x
+```
+
+### Using `matrix()`
+
+The function `matrix()` generates a matrix from the given set of values you set. 
+
+Here is an example using the basic syntax for matrices.
+* `matrix(data, nrow, ncol, byrow, dimnames)`
+```{r}
+# Creating the matrix
+my_matrix <- matrix(c(1:12), nrow = 4, byrow = TRUE)
+print(my_matrix)
+```
+
+
+### Using `data.frame()`
+
+The function `data.frame()` creates a data frame, a list of variables of the same number of rows and row names that were given inside the class `data.frame()`.
+
+```{r}
+school_data_frame <- data.frame(
+  student_id = c(1:7),
+  student_name = c("Adri","Billie","Jailene","Jaylene", "Junior","Lissete","Oscar")
+)
+
+# Calling new data.frame
+school_data_frame
+```
+
+### Using `nrow()`
+
+The function `nrow()` returns the number of rows that are present inside of your vector, array, data frame, or NULL. The value of this function is an integer of length 1 or NULL.
+
+```{r}
+# Using the nrow() function to get the number of rows from the data frame 'ginkgo'
+
+nrow(ginkgo)
+```
+
+### Using `ncol()`
+
+The function `ncol()` returns the number of columns that are present inside of your vector, array, data frame, or NULL. The value of this function is an integer of length 1 or NULL.
+
+```{r}
+# Using the ncol() function to get the number of columns from the data frame 'ginkgo'
+
+ncol(ginkgo)
+```
+
+
+### Using `dim()`
+
+The function `dim()` aids the R user in retrieving or setting the dimensions of an object. It is usually used as a method for `data.frames`.
+
+In the example below, you should see that dim returns the number of rows and columns for the data frame 'ginkgo'.
+
+```{r}
+# Using dim() function on 'ginkgo' data frame
+dim(ginkgo)
+```
+
+
+## Subsetting
+
+### Using the `$` operator
+
+The operator `$` is used to access, extract, and subset a specific part of a data object in R, e.g. a column from a data frame or list.
+
+Below, I will show an example using `$` to extract the information of one column from the `ginkgo` trees data frame.
+
+```{r}
+# Using `$` to subset the petiole_length column from the `ginkgo` data frame.
+
+ginkgo$petiole_length
+```
+
+
+### Using the `[]` operator
+
+The operator `[]` allows you to subset a column or row. Below I will show various ways that you can use this operator. 
+
+Example #1: Here we will subset the first row inside of the `ginkgo` data frame.
+
+```{r}
+#Subsetting the first row of the `ginkgo` data frame
+ginkgo_1_subset <- ginkgo[1,]
+```
+
+Example #2: Here we will select the content from row 2 and column 3 that is in the `ginkgo` data frame. 
+
+```{r}
+#Selecting the content from row 2 and column 3
+ginkgo_2_subset <- ginkgo[2,3]
+```
+
+Example #3: Here we will select the third column from the `ginkgo` data frame.
+
+```{r}
+# Selecting the third column from the ginkgo data
+ginkgo_3_subset <- ginkgo[,3]
+```
+
+### Using the `subset()` function
+
+The function `subset()` helps return subsets of vectors, matrices or data frames based on the conditions one sets. 
+
+Here's an example where I only subset the species `Adelie` from the `penguins` data frame (which is included in the `palmerpenguins` R package).
+
+```{r}
+# Subsetting to get Adelie Penguin Data
+adelie <- subset(penguins, species == "Adelie")
+```
+
+## Numerical Data Exploration
+
+### Using the `summary()` Function
+
+The function `summary()` produces a result summary table derived from results of various model fitting functions, i.e. minimum/maximum value, 1st/3rd quartile, median, and mean.
+
+Here's an example where I used the `summary()` function on the `ginkgo` data frame for the variable `petiole_length`.
+
+```{r}
+# Summary of `petiole_length` in `ginkgo` data frame
+summary(ginkgo$petiole_length)
+```
+
+### Using the `mean()` Function
+
+The function `mean()` takes the arithmetic mean (also known as the average) of the R object you want. 
+
+Down below, I provide an example where I take the mean of the variable `petiole_length` from the `ginkgo` data frame.
+```{r}
+# Mean of `petiole_length` in `ginkgo` data frame
+mean(ginkgo$petiole_length)
+```
+
+
+### Using the `sd()` Function
+
+The function `sd()` takes the standard deviation of the values in a numeric vector or an R object (except if its a factor coercible to a numeric by `as.double(x)`). 
+
+```{r}
+# Standard deviation of `petiole_length` in `ginkgo` data frame
+sd(ginkgo$petiole_length)
+```
+
+## Graphical Data Exploration
+
+### How to create a scatter`plot` 
+
+The function `plot()` allows you to create the data visualization, scatterplot, given the information from your data frame. 
+
+* `col =` changes the color of the points
+
+* `pch =` changes the shape of the points
+
+* `cex =` changes the size of the points
+
+* `main =` adds a title to your visualization (note: you have to write your title inside of quotation marks, e.g. main = "your title here")
+
+* `xlab =` adds/changes the x-axis label of your visualization (note: this label is written inside of quotation marks)
+
+* `ylab =` adds/changes the y-axis label of your visualization (note: this label is written inside of quotation marks)
+
+* `xlim =` specifies the x-axis limits of your plot
+
+* `ylim =` specifies the y-axis limits of your plot
+
+Here we used the `ginkgo` data frame to create a scatterplot of max leaf depth (x) and max leaf width (y).
+
+```{r}
+plot(ginkgo$max_depth, ginkgo$max_width, 
+     col = "#feb24c", 
+     pch = 2, 
+     cex = 1.25, 
+     main = "Ginkgo Trees Max Leaf Depth vs Max Leaf Width", 
+     xlab = "Leaf Depth (mm)", 
+     ylab = "Leaf Width (mm)", 
+     xlim = c(0, 140),
+     ylim = c(0, 150))
+```
+
+---
+
+### How to create a `hist`ogram
+
+The function `hist()` creates a histogram. This type of plot only requires an x variable to make the plot. Note: when making a histogram you can also use `breaks =` to change the number of cells displayed in your data visualization.
+
+Here's an example using the function `hist` and the element `breaks` to create a histogram of penguins flipper lengths.
+
+```{r}
+# Creating a histogram of penguins flipper lengths
+flipper_length <- penguins$flipper_length_mm
+hist(flipper_length,
+     breaks = 5,
+     xlab = "Flipper Length (mm)")
+
+```
+
+---
+
+### How to create a `boxplot`
+
+The function `boxplot` creates a boxplot using one variable. 
+
+Here's an example of a simple boxplot I made showing the petiole lengths of Ginkgo Tree leaves.
+
+```{r}
+# Simple Boxplots -- petiole lengths
+boxplot(ginkgo$petiole_length, 
+        main = "Ginkgo Petiole Lengths",
+        ylab = "Petiole Length (mm)")
+```
+
+Here's an example of another kind of boxplot that you can make that looks into multiple variables.
+
+```{r}
+# Conditional Boxplots -- of max leaf width conditioned on the seeds_present column
+
+boxplot(max_width~seeds_present, 
+        data = ginkgo, 
+        main = "Ginkgo Trees Max Leaf Width Conditioned on Seeds Present",
+        xlab = "Seeds Present (T/F)",
+        ylab = "Leaf Width (mm)")
+```
+
+---
+
+### How to create a multi-panel figure
+
+To create a multi-panel figure, you can use the function `par()` with its required argument `mfrow`. The combination of `par(mfrow = c())` allows the R user to set the parameters (the number of rows and columns) for their panel.
+
+Here's an example of a 2 by 2 grid panel, showing 4 histograms from the `ginkgo` data frame.
+```{r}
+#Setting the panel's parameters 
+par(mfrow= c(2,2))
+
+# petiole length histogram
+hist(ginkgo$petiole_length,
+     main = "Ginkgo Leaves: Petiole Length", 
+     xlab = "Petiole Length (mm)")
+
+# notch depth histogram
+hist(ginkgo$notch_depth,
+     main = "Ginkgo Leaves: Notch Depth",
+     xlab = "Notch Depth (mm)")
+
+# max leaf width histogram
+hist(ginkgo$max_width,
+     main = "Ginkgo Leaves: Max Width",
+     xlab = "Leaf Width (mm)")
+
+# max leaf depth histogram
+hist(ginkgo$max_depth,
+     main = "Ginkgo Leaves: Max Depth",
+     xlab = "Leaf Depth (mm)")
+```
+
+
+## Distribution Functions
+
+### Using the `dnorm()` function
+
+The `dnorm()` function returns the value of the probability density function of the normal distribution given a set of conditions. These conditions are a random variable (x), a population mean, and a population standard deviation.
+
+Here's an example using `dnorm`.
+
+```{r}
+# Using dnorm on a random variable (x = 3), with a mean of 0 and standard deviation of 1
+
+dnorm(x=3, mean=0, sd=1)
+```
+
+
+### Using the `pnorm()` function
+
+The `pnorm()` function returns the value of the cumulative density function of the normal distribution given a set of conditions. These conditions are a random variable (q), a population mean, and a standard deviation.
+
+Here's an example using `pnorm`.
+
+```{r}
+# using pnorm on a vector of quantiles of 100 with a mean of 50 and standard deviation of 1
+
+pnorm(100, mean=50, sd=1, lower.tail=FALSE)
+```
+
+### Using the `qnorm()` function
+
+The `qnorm()` function returns the value of the cumulative density function of the normal distribution given a set of conditions. These conditions are a random variable (p), a population mean, and a standard deviation.
+
+Here's an example using `qnorm`:
+
+```{r}
+# Using qnorm given the 95th quantile
+qnorm(.95, mean=0, sd=1)
+```
+
+### Using the `dbinom()` function
+
+The `dbinom()` function returns the value of the probability density function of the binomial distribution given a set of conditions. These conditions are a random variable (x), the number of trials (size), and the probability of success for each trial.
+
+Here's an example using `dbinom()`.
+```{r}
+# Using `dbinom` on a sample size of 80 and probability of 50%
+
+dbinom(x=20, size=80, prob=.5)
+```
+
+### Using the `pbinom()` function
+
+The `pbinom()` function returns the value of the cumulative density function of the binomial distribution given a set of conditions. These conditions are a random variable (q), the number of trials (size), and the probability of success for each trial.
+
+Here's an example using `pbinom()`.
+
+```{r}
+# Using `pbinom` on a sample size of 100 and probability of 50%
+
+pbinom(10, size=100, prob=.5, lower.tail=FALSE)
+```
+
+### Using the `qbinom()` function
+
+The `qbinom()` function returns the value of the cumulative density function of the binomial distribution given a set of conditions. These conditions are a random variable (p), the number of trials (size), and the probability of success for each trial.
+
+Here's an example using `qbinom()`.
+
+```{r}
+# Using `qbinom` on a sample size of 450 and probability of 75%
+
+qbinom(0.49, size=450, prob=.75)
+```
+
+...

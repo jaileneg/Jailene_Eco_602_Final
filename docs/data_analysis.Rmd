@@ -1,0 +1,366 @@
+---
+title: 'Final Project Part 2: Data Analysis'
+author: "Jailene Gonzalez"
+date: "2022-12-07"
+output: html_document
+---
+
+# Data Exploration {.tabset .tabset-pills}
+
+## Numerical Exploration
+
+Create a code chunk that includes the following:
+
+* Use `summary()` on the body mass and body length data columns in the Delomys data set to display summary statistics.
+
+* Perform a test of normality on the body mass and length columns. You can use `shapiro.test()`
+
+```{r, echo = FALSE, message = FALSE}
+# Loading here package
+library(here)
+require(here)
+
+# Loading delomys package
+delomys <- read.csv(here("./docs/delomys.csv"))
+
+# summary() function for body mass
+summary(delomys$body_mass)
+
+# summary() functions body length
+summary(delomys$body_length)
+
+# shapiro.test() for body mass
+shapiro.test(delomys$body_mass)
+
+# shapiro.test() for body length
+shapiro.test(delomys$body_length)
+
+```
+
+## Graphical Exploration
+
+#### 1. A scatterplot of body mass and body length.
+
+```{r, echo = FALSE}
+plot(delomys$body_mass, delomys$body_length, xlab = "Body Mass (g)", ylab = "Body Length (mm)", main = "Delomys Body Mass vs Body Length")
+
+```
+
+#### 2. A histogram of body mass
+
+```{r, echo = FALSE}
+hist(delomys$body_mass, xlab = "Body Mass (g)", main = "Delomys Body Mass")
+```
+
+#### 3. A histogram of body length
+
+```{r, echo = FALSE}
+hist(delomys$body_length, xlab = "Body Length (mm)", main = "Delomys Body Length")
+```
+
+#### 4. A conditional boxplot of body mass, conditioned on species (column `binomial`)
+
+```{r, echo = FALSE}
+boxplot(body_mass~binomial, data = delomys, ylab = "Body Mass (g)", xlab = "Species", main = "Body Mass of Delomys by Species")
+```
+
+#### 5. A conditional boxplot of body mass, conditioned on sex (column `sex`)
+
+```{r, echo = FALSE}
+boxplot(body_mass~sex, data = delomys, ylab = "Body Mass (g)", xlab = "Sex", main = "Body Mass of Delomys by Sex")
+```
+
+#### 6. A conditional boxplot of body mass, conditioned on both species and sex
+
+```{r, echo = FALSE}
+boxplot(body_mass~sex + binomial, data = delomys, ylab = "Body Mass (g)", xlab = " ", main = "Body Mass of D. dorsalis vs D. sublineatus", names = c("Female \nD. dorsalis", "Male \nD. dorsalis", "Female \nD. sublineatus", "Male \nD. sublineatus"))
+```
+
+### Q1-4: Data Exploration
+
+Answer the following in your report:
+
+**Q1 (2 pts.): Qualitatively describe the relationship between body mass and length.
+Does the relationship seem linear, curved, nonexistent?**
+
+* The relationship between body mass and body length appears to be curved. Initially on the scatterplot it appears that body mass increases as a delomys continues to grow in length. However it then reaches a point where as body mass increases, body length starts to decrease. 
+
+**Q2 (2 pts.): Qualitatively describe the shapes of the histograms.**
+Do the data appear normally-distributed? Explain why or why not.
+Explain why we care (or not) whether the data are normally distributed.
+
+* The shape of the histogram showing delomys body mass appears to be more normally distributed than body length. Delomys body length appears to not be normally distributed because it seems to be slightly skewed. On another note: we care about data being normally distributed because it allows us to use an approach/model that replicates the natural world through the use of continuous data. 
+
+**Q3 (2 pts.): Using both the histograms and normality tests, do you think the (unconditioned) body masses and body length are normally-distributed?
+Make sure you contrast your visual assessment of normality to the results of the numerical normality tests.**
+
+* Initially, when we looked at the histograms for body mass and body length I thought that the only one that appeared to be normally distributed was the histogram for body mass. However, after conducting normality tests (shapiro tests) for the delomy’s body masses and body lengths, they both were not normally distributed. They are both not normally distributed because their shapiro test results showed that they had a p-value less than 0.05. 
+
+**Q4 (2 pts.): Examine the three conditional boxplots.
+Describe any graphical evidence you see for body mass differences based on species and/or sex.**
+
+* When I looked at the conditional boxplot of body mass, conditioned on species (column binomial), it seems that D. dorsalis has a higher median value than D. sublineatus. Then, when I  made a conditional boxplot of body mass that was conditioned on sex, it showed that male delomys had a slightly higher median value than female delomys. Lastly, I made another conditional boxplot of body mass, conditioned on both species and sex and we can see that the male counterpart of both species had a higher mean value than their female counterparts.
+
+## Model Building
+
+#### Model 1: simple linear regression `body_length ~ body_mass`
+
+```{r, echo = FALSE, message = FALSE}
+# simple linear regression `body_length ~ body_mass`
+fit1 = lm(body_length ~ body_mass, data = delomys)
+
+# summary of fit1
+summary(fit1)
+```
+
+
+#### Model 2: 1-way ANOVA `body_mass ~ sex`
+
+```{r, echo = FALSE, message = FALSE}
+# 1-way ANOVA for `body_mass ~ sex` stored in variable fit2
+fit2 = lm(body_mass ~ sex, data = delomys)
+
+# anova test for fit2
+anova(fit2)
+```
+
+
+#### Model 3: 1-way ANOVA `body_mass ~ binomial`
+
+```{r, echo = FALSE, message = FALSE}
+# 1-way ANOVA `body_mass ~ binomial` stored in variable fit3
+fit3 = lm(body_mass ~ binomial, data = delomys)
+
+# anova test for fit3
+anova(fit3)
+```
+
+#### Model 4: 2-way additive ANOVA `body_mass ~ sex + binomial`
+
+```{r, echo = FALSE, message = FALSE}
+# 2-way additive ANOVA `body_mass ~ sex + binomial` stored in fit4
+fit4 = lm(body_mass ~ sex + binomial, data = delomys)
+
+# anova test for fit4
+anova(fit4)
+```
+
+#### Model 5: 2-way factorial ANOVA `body_mass ~ sex * binomial`
+
+```{r, echo = FALSE, message = FALSE}
+# 2-way factorial ANOVA `body_mass ~ sex * binomial` stored in fit5
+fit5 = lm(body_mass ~ sex * binomial, data = delomys)
+
+# anova test for fit5
+anova(fit5)
+```
+
+## Model Diagnostic 
+
+```{r, echo=FALSE}
+# Model 1 residuals (fit1)
+fit_1_res <- residuals(fit1)
+hist(fit_1_res, main = "Model 1: Simple Linear Regression Residuals", xlab = "Residual")
+shapiro.test(fit_1_res)
+```
+
+```{r, echo=FALSE}
+# Model 2 residuals (fit2)
+fit_2_res <- residuals(fit2)
+hist(fit_2_res, main = "Model 2: 1 Way Anova (Body Mass and Sex) Residuals", xlab = "Residual")
+shapiro.test(fit_2_res)
+```
+
+```{r, echo=FALSE}
+# Models 3 residuals (fit3)
+fit_3_res <- residuals(fit3)
+hist(fit_3_res, main = "Model 3: 1-Way Anova (Body Mass and Species) Residuals", xlab = "Residual")
+shapiro.test(fit_3_res)
+```
+
+```{r, echo=FALSE}
+# Model 4 residuals (fit4)
+fit_4_res <- residuals(fit4)
+hist(fit_4_res, main = "Model 4: 2-way additive ANOVA Residuals", xlab = "Residual")
+shapiro.test(fit_4_res)
+
+```
+
+```{r, echo=FALSE}
+# Model 5 residuals (fit5)
+fit_5_res <- residuals(fit5)
+hist(fit_5_res, main = "Model 5: 2-way factorial ANOVA Residuals", xlab = "Residual")
+shapiro.test(fit_5_res)
+
+```
+
+
+### Q5-6: Model Assumptions
+
+Answer the following in your report:
+
+**Q5 (2 pts.): What do you conclude about residual normality based on the numerical and graphical diagnostics?**
+
+* Based on the numerical and graphical diagnostics for the residuals in our models, we can conclude that none of them exhibited normality. They were not normally distributed because they all had a p-value that was less than 0.05 when we conducted a shapiro test. 
+
+**Q6 (1 pt.): Are violations of the normality assumption equally severe for all the models?**
+
+* No they are not equally severe for all the models. 
+
+
+## Model Interpretation
+
+### Q 7-9: Simple Linear Regression
+
+Print the model coefficient table.
+
+#### **Model 1: Simple Linear Regression**
+
+```{r, echo=FALSE}
+knitr::kable(coef(summary(fit1)), digits = 2)
+```
+
+**Q7 (2 pts.): What is the magnitude of the mass/length relationship?**
+
+* This model coefficient table shows us that there is a weak relationship between body mass and body length. Given that our body mass estimate is less than 1 (0.88 to be more precise).  
+
+**Q8 (2 pts.): What is the expected body length of an animal that weighs 100g?**
+
+* The expected body length of an animal that weighs 100g is 164.12.
+
+**Q9 (2 pts.): What is the expected body length of an animal that weighs 0g?**
+
+* The expected body length of an animal that weighs 0g is 76.12.
+
+---
+
+### Q 10-13: Body Mass: Coefficient Tables
+
+Print the model coefficient tables for each of the body mass model fits.
+
+#### **Model 2: 1-way ANOVA `body_mass ~ sex`**
+
+```{r, echo=FALSE}
+knitr::kable(coef(summary(fit2)), digits = 2)
+```
+
+#### **Model 3: 1-way ANOVA `body_mass ~ binomial`**
+
+```{r, echo=FALSE}
+knitr::kable(coef(summary(fit3)), digits = 2)
+```
+
+#### **Model 4: 2-way additive ANOVA**
+
+```{r, echo=FALSE}
+knitr::kable(coef(summary(fit4)), digits = 2)
+```
+
+#### **Model 5: 2- way factorial ANOVA**
+
+```{r, echo=FALSE}
+knitr::kable(coef(summary(fit5)), digits = 2)
+```
+
+
+**Q10 (1 pt.): What is the base level for sex?**
+
+* The base level for sex is sexfemale.
+
+**Q11 (1 pt.): What is the base level for binomial?**
+
+* The base level for binomial is binomialDemolysdorsalis.
+
+**Q12 (1 pt.): Which sex is heavier? How do you know?**
+
+* The heavier sex is male because the estimate for sexmale is a positive number (indicating that it is larger than the base level sex, sexfemale).
+
+**Q13 (1 pt.): Which species is heavier? How do you know?**
+
+* The heavier species is Demolys dorsalis because the estimate value for binomialDemolyssublineatus is negative (indicating that it is smaller than the base level binomial).
+
+### Q 14-16: ANOVA Tables
+
+Print the ANOVA tables for each of the body mass models.
+
+#### **Model 2: 1-way ANOVA `body_mass ~ sex`**
+
+```{r, echo=FALSE}
+knitr::kable(anova(fit2), digits = 2)
+```
+
+#### **Model 3: 1-way ANOVA `body_mass ~ binomial`**
+
+```{r, echo=FALSE}
+knitr::kable(anova(fit3), digits = 2)
+```
+
+#### **Model 4: 2-way additive ANOVA**
+
+```{r, echo=FALSE}
+knitr::kable(anova(fit4), digits = 2)
+```
+
+#### **Model 5: 2- way factorial ANOVA**
+
+```{r, echo=FALSE}
+knitr::kable(anova(fit5), digits = 2)
+```
+
+
+Answer the following in your report:
+
+**Q14 (1 pt.): Are sex and species significant predictors for body mass?**
+
+* Given that we used ANOVA tests to generate these tables, we cannot identify which variable is a significant predictor for body mass. ANOVA tests are generally used to determine if there is a significant interaction between multiple variables. 
+
+**Q15 (1 pt.): Is there a significant interaction?**
+
+* Yes, there is a significant interaction present in the data. 
+
+**Q16 (2 pts.): Examine the p-values for the main effects (sex and species) in all four of the ANOVA tables. Does the significance level of either main effect change very much among the different models?**
+
+* The significance level among the different models does not change very much since their p-value were so small and less than 0.05.
+
+## Model Comparison: Body Mass
+
+You built four different models of body mass. How do you choose the best one?
+
+One option is to choose the model with the lowest AIC. You can calculate AIC using the appropriately named `AIC()` function.
+
+Create a code chunk that calculates the AIC values for each of the body mass models.
+
+##### AIC for Model 2
+
+```{r, echo=FALSE}
+AIC(fit2)
+```
+
+##### AIC for Model 3
+
+```{r, echo=FALSE}
+AIC(fit3)
+```
+
+##### AIC for Model 4
+
+```{r, echo=FALSE}
+AIC(fit4)
+```
+
+##### AIC for Model 5
+
+```{r, echo=FALSE}
+AIC(fit5)
+```
+
+### Q17-18: Model Comparison
+
+**Q17 (1 pt.): Which two models have the lowest AIC?**
+
+* The two models that had the lowest AIC values are Model 4: 2-way additive ANOVA (fit4) and Model 5: 2-way factorial ANOVA (fit5).
+
+**Q18 (4 pts.): Which of the two models with lowest AIC scores would you select?
+Explain your decision based on model fit and the complexity/understanding tradeoff.**
+
+* From the two models with the lowest AIC scores, I would select Model 4: 2-way additive ANOVA because it had the lowest AIC score. I went with this choice because AIC (Akaike information criterion) helps you select the best fit model using a mathematical approach in order to find the model that explains the most variation by using the least amount of parameters. I decided to opt away from using Model 5, the interactive model, because it was more complex than the additive model. The interactive model takes into account the interaction between both independent variables.

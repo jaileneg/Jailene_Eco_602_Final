@@ -10,3 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 Welcome to Jailene's class page!
+
+[Final Project: R Reference Guide](final_R_reference.html)
+
+[Final Project: Data Analysis](data_analysis.html)
